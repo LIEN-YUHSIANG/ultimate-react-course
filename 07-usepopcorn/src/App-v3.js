@@ -115,12 +115,33 @@ function Search({ query, setQuery }) {
   // Step1: create the Ref and pass in the initial value => when working with DOM, it is usually null
   const inputEl = useRef(null);
 
-  useKey('Enter', function () {
-    if (document.activeElement === inputEl.current) return;
-
+  // Step3: use useEffect hook to create a function that runs on mount
+  useEffect(function () {
+    console.log(inputEl.current); // the Ref hooks is the DOM element we want
     inputEl.current.focus();
-    setQuery('');
-  });
+  }, []);
+
+  // useEffect(function () {
+  //   const el = document.querySelector('.search');
+  //   console.log(el);
+  //   el.focus();
+  // }, []);
+
+  useEffect(
+    function () {
+      function callback(e) {
+        if (document.activeElement === inputEl.current) return;
+
+        if (e.code === 'Enter') {
+          inputEl.current.focus();
+          setQuery('');
+        }
+      }
+      document.addEventListener('keydown', callback);
+      return () => document.addEventListener('keydiwn', callback);
+    },
+    [setQuery],
+  );
 
   return (
     <input
